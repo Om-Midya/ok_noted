@@ -1,9 +1,12 @@
 import express from 'express';
 import './DB'
 import router from './routers/noteRouter'
+import cors from 'cors'
 
 // Create a Server
 const app = express();
+
+app.use(cors())
 
 // This is a middleware that will help us to parse the request body coming from the post request
 app.use(express.json());

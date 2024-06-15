@@ -6,7 +6,7 @@ export const create: RequestHandler  = async(req, res) => {
     try{
         await newNote.save();
         console.log("Note saved successfully");
-        res.send("Note saved successfully");
+        res.send({note:{id: newNote._id, title: newNote.title, content: newNote.content}});
     } catch (error) {
         console.log(error);
         res.send("Error in saving the note");
