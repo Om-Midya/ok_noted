@@ -4,9 +4,10 @@ import ButtonComponent from "./ButtonComponent.tsx";
 interface NoteItemProps {
     title: string;
     content?: string;
+    onEditClick?: ()=>void;
 }
 
-const NoteItem: FC<NoteItemProps> = ({title,content}) => {
+const NoteItem: FC<NoteItemProps> = ({title,content, onEditClick}) => {
     return (
         <div className={"max-w-3xl mx-auto bg-white shadow-lg rounded p-5 my-5 space-y-4 border-2"}>
             <h1 className={"text-l font-semibold"}>{title}</h1>
@@ -18,8 +19,8 @@ const NoteItem: FC<NoteItemProps> = ({title,content}) => {
                 />
                 <ButtonComponent
                     text="Edit"
-                    onClick={()=>{console.log("Editing note")}}
                     color = 'green'
+                    onClick={onEditClick}
                 />
                 <ButtonComponent
                     text="Delete"

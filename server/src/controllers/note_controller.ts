@@ -22,7 +22,7 @@ export const update: RequestHandler = async(req, res) => {
     if(!note){
         return res.json({message: "Note not found"});
     }
-    res.json(note);
+    res.json({note: {id: note._id, title: note.title, content: note.content}});
 }
 
 export const deleteNote: RequestHandler = async(req, res) => {
@@ -36,7 +36,7 @@ export const deleteNote: RequestHandler = async(req, res) => {
 
 export const getNotes: RequestHandler = async(req, res) => {
     const notes = await Note.find();
-    res.json({notes});
+    res.json({notes: notes.map(note => ({id: note._id, title: note.title, content: note.content}))});
 }
 
 export const getNote: RequestHandler = async(req, res) => {

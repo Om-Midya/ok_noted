@@ -1,6 +1,6 @@
 import './App.css'
 import NoteItem from "./components/NoteItem.tsx";
-import {ChangeEventHandler, useState} from "react";
+import {ChangeEventHandler, useEffect, useState} from "react";
 import axios from "axios";
 
 function App() {
@@ -11,11 +11,23 @@ function App() {
         content?: string
     }[]>([]) // [{}, {}, {}]
 
+    useEffect(()=>{
+        // fetch notes from the server
+        const fetchNotes = async()=>
+        {
+            const response = await axios.get("http://localhost:8000/")
+            setNotes(response.data.notes)
+        }
+        fetchNotes()
+    },[])
+
 
     const[values, setValues] = useState({
         title: "",
         content: ""
     })
+
+    const [selectedNoteId, setSelectedNoteId] = useState("")
 
     // little complex function to handle input changes, but better data handling
     const handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = ({target}/*destructured e.target from e*/) =>{
@@ -31,6 +43,28 @@ function App() {
                 <h1 className={"font-semi-bold text-5xl text-center"}>OK Noted!</h1>
                 <form onSubmit={async (e)=>{
                     e.preventDefault()
+
+                    if(selectedNoteId){
+                        const response = await axios.patch(`http://localhost:8000/${selectedNoteId}`,
+                            {
+                                title: values.title,
+                                content: values.content
+                            })
+
+                        console.log(response.data.note)
+
+                        const updatedNotes = notes.map((note)=> {
+                            if(note.id === selectedNoteId){
+                                note.title = response.data.note.title
+                                note.content = response.data.note.content
+                            }
+                            return note
+                        })
+                        setNotes([...updatedNotes])
+                        setValues({title: "", content: ""})
+                        setSelectedNoteId("")
+                        return
+                    }
                     const response = await axios.post("http://localhost:8000/",
                         {
                             title: values.title,
@@ -67,7 +101,17 @@ function App() {
                 </form>
 
                 {notes.map((note)=>{
-                    return <NoteItem key={note.title} title={note.title}/>
+                    return <NoteItem
+                        key={note.id}
+                        title={note.title}
+                        onEditClick={()=>{
+                            setSelectedNoteId(note.id)
+                            setValues({
+                                title: note.title,
+                                content: note.content || ""
+                            })
+                        }}
+                    />
                 })}
             </div>
         </>
