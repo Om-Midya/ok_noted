@@ -11,6 +11,12 @@ function App() {
         content?: string
     }[]>([]) // [{}, {}, {}]
 
+    const [noteView, setNoteView] = useState<{
+        id: string,
+        title: string,
+        content?: string
+    }>()
+
     useEffect(()=>{
         // fetch notes from the server
         const fetchNotes = async()=>
@@ -111,6 +117,18 @@ function App() {
                                 content: note.content || ""
                             })
                         }}
+                        onDeleteClick={async()=>{
+                            const confirmed = confirm("Are you sure you want to delete this note?")
+                            if(confirmed){
+                                const response = await axios.delete(`http://localhost:8000/${note.id}`)
+                                console.log(response.data)
+                                setNotes(notes.filter((n)=>n.id !== note.id))
+                            }
+                        }}
+                        onViewClick={async()=>{
+                            setNoteView(note)
+                        }}
+                        content={noteView?.id === note.id ? noteView.content : note.content}
                     />
                 })}
             </div>
